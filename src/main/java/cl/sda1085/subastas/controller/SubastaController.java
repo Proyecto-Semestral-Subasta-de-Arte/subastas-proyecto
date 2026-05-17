@@ -70,22 +70,22 @@ public class SubastaController {
     //------------------------------
 
     //Busca subastas activas por su estado
-    //Ruta: GET /api/subastas/buscar/estado?estado=ABIERTA
-    @GetMapping("/buscar/estado")
+    //Ruta: GET /api/subastas/estado/ABIERTA
+    @GetMapping("/estado/{estado}")
     public ResponseEntity<List<SubastaResponseDTO>> buscarPorEstado(@RequestParam String estado) {
         return ResponseEntity.ok(subastaService.obtenerPorEstado(estado));
     }
 
     //Busca subastas de un producto específico
-    //Ruta: GET /api/subastas/buscar/producto/{idProducto}
-    @GetMapping("/buscar/producto/{idProducto}")
+    //Ruta: GET /api/subastas/producto/{idProducto}
+    @GetMapping("/producto/{idProducto}")
     public ResponseEntity<List<SubastaResponseDTO>> buscarPorIdProducto(@PathVariable Long idProducto) {
         return ResponseEntity.ok(subastaService.obtenerPorIdProducto(idProducto));
     }
 
     //Busca subastas que finalizan antes de una fecha/hora específica
     //Ruta: GET /api/subastas/buscar/vencimiento?fecha=2026-05-07T21:00:00
-    @GetMapping("/buscar/vencimiento")
+    @GetMapping("/vencimiento")
     public ResponseEntity<List<SubastaResponseDTO>> buscarPorVencimiento(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fecha) {
         return ResponseEntity.ok(subastaService.obtenerSubastasPorVencer(fecha));
@@ -99,22 +99,22 @@ public class SubastaController {
     }
 
     //Verifica si un vendedor ya tiene una subasta activa
-    //Ruta: GET /api/subastas/verificar/vendedor/{idVendedor}/activa
-    @GetMapping("/verificar/vendedor/{idVendedor}/activa")
+    //Ruta: GET /api/subastas/vendedor/{idVendedor}/activa
+    @GetMapping("/vendedor/{idVendedor}/activa")
     public ResponseEntity<Boolean> verificarVendedorActivo(@PathVariable Long idVendedor) {
         return ResponseEntity.ok(subastaService.vendedorTieneSubastaActiva(idVendedor));
     }
 
     //Encuentra la subasta que terminará más pronto (la más urgente)
-    //Ruta: GET /api/subastas/buscar/urgente
+    //Ruta: GET /api/subastas/urgente
     @GetMapping("/urgente")
     public ResponseEntity<SubastaResponseDTO> obtenerMasUrgente() {
         return ResponseEntity.ok(subastaService.obtenerSubastaMasUrgente());
     }
 
     //Verifica si un producto ya está registrado en alguna subasta
-    //Ruta: GET /api/subastas/verificar/producto/{idProducto}/registrado
-    @GetMapping("/verificar/producto/{idProducto}/registrado")
+    //Ruta: GET /api/subastas/producto/{idProducto}/registrado
+    @GetMapping("/producto/{idProducto}/registrado")
     public ResponseEntity<Boolean> verificarProductoRegistrado(@PathVariable Long idProducto) {
         return ResponseEntity.ok(subastaService.productoYaTieneSubasta(idProducto));
     }
