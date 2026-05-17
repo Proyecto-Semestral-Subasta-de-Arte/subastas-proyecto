@@ -51,13 +51,6 @@ public class SubastaController {
         return ResponseEntity.ok(subastaService.actualizar(id, dto));
     }
 
-    @GetMapping("/producto/{idProducto}")
-    public ResponseEntity<List<SubastaResponseDTO>> obtenerPorProducto(
-            @PathVariable Long idProducto) {
-
-        return ResponseEntity.ok(subastaService.obtenerPorIdProducto(idProducto));
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         subastaService.eliminar(id);
@@ -79,7 +72,9 @@ public class SubastaController {
     //Busca subastas de un producto específico
     //Ruta: GET /api/subastas/producto/{idProducto}
     @GetMapping("/producto/{idProducto}")
-    public ResponseEntity<List<SubastaResponseDTO>> buscarPorIdProducto(@PathVariable Long idProducto) {
+    public ResponseEntity<List<SubastaResponseDTO>> buscarPorIdProducto(
+            @PathVariable Long idProducto) {
+
         return ResponseEntity.ok(subastaService.obtenerPorIdProducto(idProducto));
     }
 

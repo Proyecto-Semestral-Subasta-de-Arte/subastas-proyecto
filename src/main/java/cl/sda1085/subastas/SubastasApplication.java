@@ -4,9 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableScheduling //Es el interruptor maestro que activa el soporte de Spring para tareas programadas.
+@EnableScheduling  //Interruptor que activa el soporte de Spring para tareas programadas.
 @SpringBootApplication
-
 public class SubastasApplication {
 
 	public static void main(String[] args) {
