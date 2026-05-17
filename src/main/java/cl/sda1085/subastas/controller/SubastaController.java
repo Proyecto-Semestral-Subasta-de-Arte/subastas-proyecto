@@ -20,6 +20,11 @@ public class SubastaController {
 
     private final SubastaService subastaService;
 
+
+    //------------------------------
+    //CRUD estándar
+    //------------------------------
+
     @GetMapping
     public ResponseEntity<List<SubastaResponseDTO>> obtenerTodas() {
         return ResponseEntity.ok(subastaService.obtenerTodas());
@@ -27,13 +32,13 @@ public class SubastaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<SubastaResponseDTO> obtenerPorId(@PathVariable Long id) {
-        return subastaService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(subastaService.obtenerPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<SubastaResponseDTO> crear(@Valid @RequestBody SubastaRequestDTO dto) {
+    public ResponseEntity<SubastaResponseDTO> crear(
+            @Valid @RequestBody SubastaRequestDTO dto) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(subastaService.guardar(dto));
     }
@@ -43,13 +48,13 @@ public class SubastaController {
             @PathVariable Long id,
             @Valid @RequestBody SubastaRequestDTO dto) {
 
-        return subastaService.actualizar(id, dto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(subastaService.actualizar(id, dto));
     }
 
     @GetMapping("/producto/{idProducto}")
-    public ResponseEntity<List<SubastaResponseDTO>> obtenerPorProducto(@PathVariable Long idProducto) {
+    public ResponseEntity<List<SubastaResponseDTO>> obtenerPorProducto(
+            @PathVariable Long idProducto) {
+
         return ResponseEntity.ok(subastaService.obtenerPorIdProducto(idProducto));
     }
 
@@ -60,7 +65,9 @@ public class SubastaController {
     }
 
 
+    //------------------------------
     //CRUD personalizado
+    //------------------------------
 
     //Busca subastas activas por su estado
     //Ruta: GET /api/subastas/buscar/estado?estado=ABIERTA
@@ -86,11 +93,9 @@ public class SubastaController {
 
     //Busca la subasta activa de un producto específico
     //Ruta: GET /api/subastas/buscar/producto/{idProducto}/activa
-    @GetMapping("/buscar/producto/{idProducto}/activa")
+    @GetMapping("/producto/{idProducto}/activa")
     public ResponseEntity<SubastaResponseDTO> buscarActivaPorProducto(@PathVariable Long idProducto) {
-        return subastaService.obtenerSubastaActivaProducto(idProducto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(subastaService.obtenerSubastaActivaProducto(idProducto));
     }
 
     //Verifica si un vendedor ya tiene una subasta activa
@@ -102,11 +107,9 @@ public class SubastaController {
 
     //Encuentra la subasta que terminará más pronto (la más urgente)
     //Ruta: GET /api/subastas/buscar/urgente
-    @GetMapping("/buscar/urgente")
+    @GetMapping("/urgente")
     public ResponseEntity<SubastaResponseDTO> obtenerMasUrgente() {
-        return subastaService.obtenerSubastaMasUrgente()
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(subastaService.obtenerSubastaMasUrgente());
     }
 
     //Verifica si un producto ya está registrado en alguna subasta
