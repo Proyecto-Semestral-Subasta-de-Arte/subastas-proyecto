@@ -87,7 +87,7 @@ public class SubastaController {
     }
 
     //Busca la subasta activa de un producto específico
-    //Ruta: GET /api/subastas/buscar/producto/{idProducto}/activa
+    //Ruta: GET /api/subastas/producto/{idProducto}/activa
     @GetMapping("/producto/{idProducto}/activa")
     public ResponseEntity<SubastaResponseDTO> buscarActivaPorProducto(@PathVariable Long idProducto) {
         return ResponseEntity.ok(subastaService.obtenerSubastaActivaProducto(idProducto));
