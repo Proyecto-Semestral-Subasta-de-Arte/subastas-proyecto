@@ -42,4 +42,3 @@ Ejecutar (run) la clase principal con la anotación @SpringBootApplication (Suba
 Al consumir los endpoints en Postman, tener en cuenta el comportamiento de la cadena de filtros de seguridad:
 
 * Ver Salas Activas (GET /api/subastas): Es de acceso público para que los postores vean los cronómetros en tiempo real (No Auth).
-* Crear o Programar Subasta (POST /api/subastas): Está restringido estrictamente. Exige autenticación en la pestaña Authorization como Basic Auth con una cuenta que tenga asignado el rol de ADMIN.
