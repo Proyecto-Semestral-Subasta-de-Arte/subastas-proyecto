@@ -65,7 +65,7 @@ public class SubastaController {
     //Busca subastas activas por su estado
     //Ruta: GET /api/subastas/estado/ABIERTA
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<SubastaResponseDTO>> buscarPorEstado(@RequestParam String estado) {
+    public ResponseEntity<List<SubastaResponseDTO>> buscarPorEstado(@PathVariable String estado) {
         return ResponseEntity.ok(subastaService.obtenerPorEstado(estado));
     }
 
@@ -79,7 +79,7 @@ public class SubastaController {
     }
 
     //Busca subastas que finalizan antes de una fecha/hora específica
-    //Ruta: GET /api/subastas/buscar/vencimiento?fecha=2026-05-07T21:00:00
+    //Ruta: GET /api/subastas/vencimiento?fecha=2026-05-17T21:00:00
     @GetMapping("/vencimiento")
     public ResponseEntity<List<SubastaResponseDTO>> buscarPorVencimiento(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fecha) {
