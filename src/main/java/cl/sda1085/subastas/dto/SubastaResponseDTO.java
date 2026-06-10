@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Schema(description = "Modelo de respuesta con los datos consolidados de la subasta")
 
 
-public class SubastaResponseDTO {
+public class SubastaResponseDTO extends RepresentationModel<SubastaResponseDTO> {
 
     //DTO de salida (respuesta)
     //No existen las anotaciones de validación
