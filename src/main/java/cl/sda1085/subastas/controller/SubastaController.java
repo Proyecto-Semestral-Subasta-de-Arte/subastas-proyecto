@@ -67,6 +67,7 @@ public class SubastaController {
     public ResponseEntity<SubastaResponseDTO> obtenerPorId(
             @Parameter(description = "ID numérico de la subasta a consultar", example = "1")
             @PathVariable Long id) {
+
         SubastaResponseDTO dto = subastaService.obtenerPorId(id);
         return ResponseEntity.ok(assembler.toModel(dto));
     }
@@ -126,6 +127,7 @@ public class SubastaController {
     public ResponseEntity<CollectionModel<SubastaResponseDTO>> buscarPorEstado(
             @Parameter(description = "Nombre del estado a consultar", example = "ABIERTA")
             @PathVariable String estado) {
+
         List<SubastaResponseDTO> subastas = subastaService.obtenerPorEstado(estado).stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
@@ -163,6 +165,7 @@ public class SubastaController {
     public ResponseEntity<CollectionModel<SubastaResponseDTO>> buscarPorVencimiento(
             @Parameter(description = "Fecha límite en formato ISO (yyyy-MM-ddTHH:mm:ss)", example = "2026-05-17T21:00:00")
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fecha) {
+
         List<SubastaResponseDTO> subastas = subastaService.obtenerSubastasPorVencer(fecha).stream()
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
@@ -181,6 +184,7 @@ public class SubastaController {
     public ResponseEntity<SubastaResponseDTO> buscarActivaPorProducto(
             @Parameter(description = "ID del producto a verificar", example = "1")
             @PathVariable Long idProducto) {
+
         SubastaResponseDTO dto = subastaService.obtenerSubastaActivaProducto(idProducto);
         return ResponseEntity.ok(assembler.toModel(dto));
     }
@@ -193,6 +197,7 @@ public class SubastaController {
     public ResponseEntity<Boolean> verificarVendedorActivo(
             @Parameter(description = "ID único del usuario vendedor", example = "10")
             @PathVariable Long idVendedor) {
+
         return ResponseEntity.ok(subastaService.vendedorTieneSubastaActiva(idVendedor));
     }
 
@@ -209,24 +214,25 @@ public class SubastaController {
     //Verifica si un producto ya está registrado en alguna subasta
     //Ruta: GET /api/subastas/producto/{idProducto}/registrado
     @GetMapping(value = "/producto/{idProducto}/registrado", produces = MediaTypes.HAL_JSON_VALUE)
-    @Operation(summary = "Verificar si un producto ya está en alguna subasta", description = "Retorna verdadero o falso si el identificador del producto ya se encuentra registrado en el sistema, omitiendo su estado actual.")
-    @ApiResponse(responseCode = "200", description = "Operación exitosa")
+    @Operation(summary = "Verificar si un producto ya está en alguna subasta.", description = "Retorna verdadero o falso si el identificador del producto ya se encuentra registrado en el sistema, omitiendo su estado actual.")
+    @ApiResponse(responseCode = "200", description = "Operación exitosa.")
     public ResponseEntity<Boolean> verificarProductoRegistrado(
             @Parameter(description = "ID del producto a chequear en el histórico", example = "1")
             @PathVariable Long idProducto) {
+
         return ResponseEntity.ok(subastaService.productoYaTieneSubasta(idProducto));
     }
 
     //Llama a la lógica que consulta al microservicio de Productos
     //Ruta: POST /api/subastas/registrar
     @PostMapping(value = "/registrar", produces = MediaTypes.HAL_JSON_VALUE)
-    @Operation(summary = "Registrar subasta verificada (WebClient)", description = "Lógica de negocio avanzada. Conecta síncronamente con el microservicio externo de Productos (puerto 8082) para verificar que el producto exista antes de guardar la subasta.")
+    @Operation(summary = "Registrar subasta verificada (WebClient)", description = "Lógica de negocio avanzada. Conecta síncronamente con el microservicio 'productos' (puerto 8082) para verificar que el producto exista antes de guardar la subasta.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Validación externa aprobada y subasta registrada correctamente"),
+            @ApiResponse(responseCode = "201", description = "Validación externa aprobada y subasta registrada correctamente."),
             @ApiResponse(responseCode = "400", description = "Lógica inválida (ej. fecha término anterior a inicio) o el producto no existe en el catálogo externo", content = @Content(schema = @Schema(implementation = Map.class)))
     })
     public ResponseEntity<SubastaResponseDTO> registrarSubasta(@Valid @RequestBody SubastaRequestDTO dto){
         SubastaResponseDTO registrado = subastaService.registrarSubasta(dto);
         return ResponseEntity.status(201).body(assembler.toModel(registrado));
-           }
+    }
 }

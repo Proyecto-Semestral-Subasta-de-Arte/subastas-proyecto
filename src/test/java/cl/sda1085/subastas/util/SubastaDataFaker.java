@@ -12,7 +12,7 @@ import java.util.Locale;
 
 public class SubastaDataFaker {
 
-    // Configurado en español para coherencia regional si fuera necesario
+    //Configurado en español para coherencia regional si fuera necesario
     private static final Faker faker = new Faker(new Locale("es"));
 
     public static Subasta createFakeEntity() {

@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -59,7 +57,8 @@ public class SubastaService {
 
     //Obtener todas las subastas
     public List<SubastaResponseDTO> obtenerTodas(){
-        log.info("Buscando la lista completa de subastas en el sistema");
+        log.info("Buscando la lista completa de subastas en el sistema.");
+
         return subastaRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
@@ -68,15 +67,16 @@ public class SubastaService {
     //Obtener por ID
     public SubastaResponseDTO obtenerPorId(Long id){
         log.info("Buscando subasta por ID exacto: {}", id);
+
         return subastaRepository.findById(id)
                 .map(this::mapToResponseDTO)
                 .orElseThrow(() -> {
                     log.warn("Búsqueda fallida: No existe ninguna subasta con el ID: {}", id);
-                    return new RuntimeException("Subasta no encontrada con el ID: " + id);
+                    return new RuntimeException("Subasta no encontrada con el ID: " + id + ".");
                 });
     }
 
-    //Crear (guardar) con validación de fechas
+    //Crear (guardar) con validación de fechas y verificación de existencia del producto
     public SubastaResponseDTO guardar(SubastaRequestDTO dto){
         log.info("Iniciando registro de subasta local para el producto ID: {}", dto.getIdProducto());
 
@@ -84,6 +84,11 @@ public class SubastaService {
             log.warn("Validación de fechas rechazada: Fecha de inicio {} es posterior a la de término {}", dto.getFechaInicio(), dto.getFechaTermino());
             throw new RuntimeException("La fecha de inicio no puede ser posterior a la de término.");
         }
+
+        //Validar que el producto exista consumiendo el WebClient antes de guardar
+        log.info("Verificando existencia del producto ID: {} a través de ProductoClient...", dto.getIdProducto());
+        productoClient.obtenerProductoPorId(dto.getIdProducto());
+        log.info("Producto verificado con éxito de forma distribuida.");
 
         Subasta subasta = new Subasta();
         subasta.setIdProducto(dto.getIdProducto());
@@ -105,6 +110,11 @@ public class SubastaService {
         log.info("Iniciando actualización para la subasta con ID: {}", id);
 
         return subastaRepository.findById(id).map(subastaExistente -> {
+
+            //Validar que el nuevo ID de producto exista antes de actualizar el registro
+            log.info("Verificando existencia del nuevo producto ID: {} para actualización...", dto.getIdProducto());
+            productoClient.obtenerProductoPorId(dto.getIdProducto());
+
             subastaExistente.setIdProducto(dto.getIdProducto());
             subastaExistente.setIdVendedor(dto.getIdVendedor());
             subastaExistente.setPrecioBase(dto.getPrecioBase());
@@ -115,9 +125,10 @@ public class SubastaService {
             Subasta subastaActualizada = subastaRepository.save(subastaExistente);
             log.info("Subasta ID: {} actualizada exitosamente en la base de datos", id);
             return mapToResponseDTO(subastaActualizada);
+
         }).orElseThrow(() -> {
             log.warn("Actualización fallida: Imposible modificar. La subasta con ID: {} no existe", id);
-            return new RuntimeException("No se puede actualizar. Subasta no encontrada con el ID: " + id);
+            return new RuntimeException("No se puede actualizar. Subasta no encontrada con el ID: " + id + ".");
         });
     }
 
@@ -128,7 +139,7 @@ public class SubastaService {
 
         if (!subastaRepository.existsById(id)) {
             log.warn("Eliminación fallida: La subasta con ID: {} no existe en el sistema", id);
-            throw new RuntimeException("No se puede eliminar. Subasta no encontrada con el ID: " + id);
+            throw new RuntimeException("No se puede eliminar. Subasta no encontrada con el ID: " + id + ".");
         }
 
         subastaRepository.deleteById(id);
@@ -150,7 +161,7 @@ public class SubastaService {
 
         if (resultados.isEmpty()) {
             log.warn("Filtro vacío: No se encontraron subastas en estado '{}'", estado);
-            throw new RuntimeException("No se encontraron subastas registradas con el estado: " + estado);
+            throw new RuntimeException("No se encontraron subastas registradas con el estado: " + estado + ".");
         }
         return resultados;
     }
@@ -165,7 +176,7 @@ public class SubastaService {
 
         if (resultados.isEmpty()) {
             log.warn("Consulta vacía: El producto ID {} no registra subastas asociadas", idProducto);
-            throw new RuntimeException("No se encontraron subastas para el producto con ID: " + idProducto);
+            throw new RuntimeException("No se encontraron subastas para el producto con ID: " + idProducto + ".");
         }
         return resultados;
     }
@@ -179,7 +190,7 @@ public class SubastaService {
                 .collect(Collectors.toList());
 
         if (resultados.isEmpty()) {
-            log.info("No se encontraron subastas próximas a vencer antes del umbral solicitado");
+            log.info("No se encontraron subastas próximas a vencer antes del umbral solicitado.");
         }
         return resultados;
     }
@@ -192,27 +203,27 @@ public class SubastaService {
                 .map(this::mapToResponseDTO)
                 .orElseThrow(() -> {
                     log.warn("Consulta vacía: No hay ninguna subasta ABIERTA actualmente para el producto ID: {}", idProducto);
-                    return new RuntimeException("No existe una subasta activa (ABIERTA) para el producto ID: " + idProducto);
+                    return new RuntimeException("No existe una subasta activa (ABIERTA) para el producto ID: " + idProducto + ".");
                 });
     }
 
     //Verificar si un vendedor ya tiene una subasta activa
     public boolean vendedorTieneSubastaActiva(Long idVendedor){
         log.info("Verificando si el vendedor ID: {} posee actualmente subastas en estado ABIERTA", idVendedor);
-
         boolean tieneActiva = subastaRepository.existsByIdVendedorAndEstado(idVendedor, "ABIERTA");
+
         log.info("Resultado de verificación para vendedor ID {}: {}", idVendedor, tieneActiva);
         return tieneActiva;
     }
 
     //Encontrar la subasta que terminará más pronto
     public SubastaResponseDTO obtenerSubastaMasUrgente(){
-        log.info("Consultando la subasta activa con el tiempo de cierre más próximo");
+        log.info("Consultando la subasta activa con el tiempo de cierre más próximo.");
 
         return subastaRepository.findTopByEstadoOrderByFechaTerminoAsc("ABIERTA")
                 .map(this::mapToResponseDTO)
                 .orElseThrow(() -> {
-                    log.warn("Consulta vacía: No existen subastas en estado 'ABIERTA' en este momento");
+                    log.warn("Consulta vacía: No existen subastas en estado 'ABIERTA' en este momento.");
                     return new RuntimeException("No se pudo determinar la subasta más urgente porque no hay salas abiertas.");
                 });
     }
@@ -233,11 +244,11 @@ public class SubastaService {
         List<Subasta> vencidas = subastaRepository.findByFechaTerminoBefore(fechaInicio);
         int contadorCierres = 0;
 
-        for (Subasta subasta : vencidas) {
-            //Sólo cierra las que aún figuran como estado abiertas o programadas
+        for (Subasta subasta : vencidas) {  //Sólo cierra las que aún figuran como estado abiertas o programadas
             if (!subasta.getEstado().equals("CERRADA")) {
                 subasta.setEstado("CERRADA");
                 subastaRepository.save(subasta);
+
                 log.info("[Cron Scheduler] Subasta ID {} marcada como CERRADA por cumplimiento de tiempo", subasta.getId());
                 contadorCierres++;
             }
@@ -251,14 +262,14 @@ public class SubastaService {
         log.info("Iniciando solicitud distribuida de registro de subasta vía WebClient para producto ID: {}", dto.getIdProducto());
 
         if (dto.getFechaInicio().isAfter(dto.getFechaTermino())){  //Validación de fechas
-            log.warn("Fallo de validación temporal: Fecha de inicio es posterior a la de término");
+            log.warn("Fallo de validación temporal: Fecha de inicio es posterior a la de término.");
             throw new RuntimeException("La fecha de inicio no puede ser posterior a la fecha de término.");
         }
 
-        log.info("Llamando a Microservicio de Productos (puerto 8082) para validar existencia del ítem...");
+        log.info("Llamando a microservicio 'productos' (puerto 8082) para validar existencia del ítem...");
         productoClient.obtenerProductoPorId(dto.getIdProducto());  //Validación de producto (WebClient)
-        log.info("Comunicación exitosa. El producto existe y está habilitado.");
 
+        log.info("Comunicación exitosa. El producto existe y está habilitado.");
         Subasta subasta = mapToEntity(dto);  //Mapeo único de la entidad
 
         if (subasta.getEstado() == null){

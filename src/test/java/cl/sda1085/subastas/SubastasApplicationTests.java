@@ -9,5 +9,4 @@ class SubastasApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

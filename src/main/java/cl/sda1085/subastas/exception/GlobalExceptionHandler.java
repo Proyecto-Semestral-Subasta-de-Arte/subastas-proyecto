@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -24,9 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String,String>> handleRuntimeException(RuntimeException ex){
         Map<String,String> error = new LinkedHashMap<>();
-        error.put("error", ex.getMessage());
+        error.put("ERROR", ex.getMessage());
         return ResponseEntity.badRequest().body(error);
     }
 }
-
-
