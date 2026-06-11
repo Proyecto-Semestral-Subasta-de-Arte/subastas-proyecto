@@ -37,14 +37,14 @@ class SubastaServiceTest {
     @DisplayName("Debería obtener una subasta correctamente por su ID.")
     void shouldObtenerPorIdCorrectamente() {
 
-        // Given (ARRANGE)
+        //Given (ARRANGE)
         Subasta subastaFake = SubastaDataFaker.createFakeEntity();
         when(subastaRepository.findById(subastaFake.getId())).thenReturn(Optional.of(subastaFake));
 
-        // When (ACT)
+        //When (ACT)
         SubastaResponseDTO resultado = subastaService.obtenerPorId(subastaFake.getId());
 
-        // Then (ASSERT)
+        //Then (ASSERT)
         assertNotNull(resultado);
         assertEquals(subastaFake.getId(), resultado.getId());
         assertEquals(subastaFake.getPrecioBase(), resultado.getPrecioBase());
@@ -82,7 +82,7 @@ class SubastaServiceTest {
         SubastaRequestDTO requestDTO = SubastaDataFaker.createFakeRequestDTO();
         Subasta subastaGuardada = SubastaDataFaker.createFakeEntity();
 
-        //Sincronizamos los datos esenciales de la simulación
+        //Sincronizar los datos esenciales de la simulación
         subastaGuardada.setIdProducto(requestDTO.getIdProducto());
         subastaGuardada.setFechaInicio(requestDTO.getFechaInicio());
         subastaGuardada.setFechaTermino(requestDTO.getFechaTermino());
@@ -109,15 +109,15 @@ class SubastaServiceTest {
         //Given (ARRANGE)
         SubastaRequestDTO requestErroneo = SubastaDataFaker.createFakeRequestDTO();
         requestErroneo.setFechaInicio(LocalDateTime.now().plusDays(10));
-        requestErroneo.setFechaTermino(LocalDateTime.now().plusDays(2)); // Fecha término anterior
+        requestErroneo.setFechaTermino(LocalDateTime.now().plusDays(2));  //Fecha de término anterior
 
         //When & Then (ACT & ASSERT)
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             subastaService.registrarSubasta(requestErroneo);
         });
-        assertEquals("La fecha de inicio no puede ser posterior a la fecha de término", exception.getMessage());
+        assertEquals("La fecha de inicio no puede ser posterior a la fecha de término.", exception.getMessage());
 
-        // Verificamos que la ejecución se detuvo antes de llamar a WebClient o al repositorio
+        //Verificamos que la ejecución se detuvo antes de llamar a WebClient o al repositorio
         verifyNoInteractions(productoClient);
         verifyNoInteractions(subastaRepository);
     }

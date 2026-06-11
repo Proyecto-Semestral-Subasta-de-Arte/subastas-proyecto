@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Schema(description = "Modelo de respuesta con los datos consolidados de la subasta.")
 
-
 public class SubastaResponseDTO extends RepresentationModel<SubastaResponseDTO> {
 
     //DTO de salida (respuesta)

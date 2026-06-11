@@ -14,17 +14,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Subasta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, updatable = true)
+    @Column(name = "id_producto", nullable = false, updatable = true)
     private Long idProducto;  //Relacionado con microservicio 'productos'
 
-    @Column(nullable = false)
+    @Column(name = "id_vendedor", nullable = false)
     private Long idVendedor;  //Relacionado con microservicio 'usuarios' (vendedor)
 
     @Column(nullable = false, precision = 12, scale = 2)
@@ -39,6 +38,6 @@ public class Subasta {
     @Column(nullable = false, updatable = true)
     private String estado;  //Programada, abierta, cerrada o cancelada
 
-    @Column(nullable = true)
+    @Column(name = "id_ganador", nullable = true)
     private Long idGanador;  //Al final, guardará quién ganó para que el microservicio 'pagos' lo use
 }

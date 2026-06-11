@@ -23,7 +23,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Verificar si existen subastas para no duplicarlas
         if (subastaRepository.count() > 0) {
-            log.info("Base de datos de subastas ya contiene datos. Omitiendo inicialización");
+            log.info("Base de datos de subastas ya contiene datos. Omitiendo inicialización.");
             return;
         }
         log.info("Generando 10 subastas de prueba con fechas fijas distribuidas en Mayo 2026...");

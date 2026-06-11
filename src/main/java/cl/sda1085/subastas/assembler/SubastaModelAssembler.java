@@ -14,10 +14,10 @@ public class SubastaModelAssembler implements RepresentationModelAssembler<Subas
         @Override
         public SubastaResponseDTO toModel(SubastaResponseDTO dto) {
 
-            //Enlace al recurso individual (self) -> /api/subastas/{id}
+            //Enlace al recurso individual (self) --> /api/subastas/{id}
             dto.add(linkTo(methodOn(SubastaController.class).obtenerPorId(dto.getId())).withSelfRel());
 
-            //Enlace al listado general histórico -> /api/subastas
+            //Enlace al listado general histórico --> /api/subastas
             dto.add(linkTo(methodOn(SubastaController.class).obtenerTodas()).withRel("subastas"));
 
             //Enlace condicional dinámico: si está abierta, expone el endpoint para buscar otras del mismo estado
