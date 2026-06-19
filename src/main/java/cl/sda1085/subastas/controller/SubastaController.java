@@ -30,6 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/subastas")
 @Tag(name = "Gestión de Subastas", description = "Endpoints para el control, consulta y registro distribuido de subastas de productos.")
 
